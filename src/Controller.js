@@ -5,7 +5,7 @@
 function doGet() {
   return HtmlService.createTemplateFromFile('index')
       .evaluate()
-      .setTitle('研究室予約システム')
+      .setTitle('8階小部屋予約システム')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -180,8 +180,8 @@ function apiCreateReservation(requestData) {
     historySheet.appendRow([reservationId, "CREATE", "", `Date: ${requestData.date}, Time: ${requestData.startTime}-${requestData.endTime}, Purpose: ${requestData.purpose}`, requestData.userEmail, timestamp]);
     
     const appUrl = ScriptApp.getService().getUrl();
-    const mailSubject = `【予約完了】研究室利用予約 (${requestData.date})`;
-    const mailBody = `${requestData.userName} 様\n\n研究室の利用予約が完了しました。\n\n・予約ID: ${reservationId}\n・日付: ${requestData.date}\n・時間: ${requestData.startTime} ～ ${requestData.endTime}\n・目的: ${requestData.purpose}\n\n予約の確認、変更、キャンセルは以下のシステム画面より行ってください。\n${appUrl}`;
+    const mailSubject = `【予約完了】8階小部屋利用予約 (${requestData.date})`;
+    const mailBody = `${requestData.userName} 様\n\n8階小部屋の利用予約が完了しました。\n\n・予約ID: ${reservationId}\n・日付: ${requestData.date}\n・時間: ${requestData.startTime} ～ ${requestData.endTime}\n・目的: ${requestData.purpose}\n\n予約の確認、変更、キャンセルは以下のシステム画面より行ってください。\n${appUrl}`;
     
     enqueueMail(reservationId, "CREATE", requestData.userEmail, mailSubject, mailBody);
     processMailQueue();
@@ -309,8 +309,8 @@ function apiUpdateReservation(requestData) {
     historySheet.appendRow([requestData.reservationId, "UPDATE", "", `NewDate: ${requestData.date}, Time: ${requestData.startTime}-${requestData.endTime}, Purpose: ${requestData.purpose}`, requestData.userEmail, timestamp]);
     
     const appUrl = ScriptApp.getService().getUrl();
-    const mailSubject = `【予約変更】研究室利用予約 (${requestData.date})`;
-    const mailBody = `${requestData.userName} 様\n\n研究室の利用予約を変更しました。\n\n・予約ID: ${requestData.reservationId}\n・日付: ${requestData.date}\n・時間: ${requestData.startTime} ～ ${requestData.endTime}\n・目的: ${requestData.purpose}\n\n予約の確認、変更、キャンセルは以下のシステム画面より行ってください。\n${appUrl}`;
+    const mailSubject = `【予約変更】8階小部屋利用予約 (${requestData.date})`;
+    const mailBody = `${requestData.userName} 様\n\n8階小部屋の利用予約を変更しました。\n\n・予約ID: ${requestData.reservationId}\n・日付: ${requestData.date}\n・時間: ${requestData.startTime} ～ ${requestData.endTime}\n・目的: ${requestData.purpose}\n\n予約の確認、変更、キャンセルは以下のシステム画面より行ってください。\n${appUrl}`;
     
     enqueueMail(requestData.reservationId, "UPDATE", requestData.userEmail, mailSubject, mailBody);
     processMailQueue();
@@ -331,8 +331,8 @@ function apiCancelReservation(reservationId, userEmail) {
     historySheet.appendRow([reservationId, "CANCEL", "", "", userEmail, timestamp]);
     
     const appUrl = ScriptApp.getService().getUrl();
-    const mailSubject = `【予約キャンセル】研究室利用予約`;
-    const mailBody = `研究室の利用予約をキャンセルしました。\n\n・予約ID: ${reservationId}\n\nシステム画面:\n${appUrl}`;
+    const mailSubject = `【予約キャンセル】8階小部屋利用予約`;
+    const mailBody = `8階小部屋の利用予約をキャンセルしました。\n\n・予約ID: ${reservationId}\n\nシステム画面:\n${appUrl}`;
     
     enqueueMail(reservationId, "CANCEL", userEmail, mailSubject, mailBody);
     processMailQueue();
