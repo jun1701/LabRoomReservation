@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>研究室予約システム</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --error-color: #F44336;
+      --bg-color: #f9f9f9;
+      --border-color: #ddd;
+    }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background-color: var(--bg-color);
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+    }
+    h2 {
+      color: #2c3e50;
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #fdfdfd;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .email-input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .email-input-group input[type="text"] {
+      flex: 1;
+    }
+    .email-domain {
+      font-weight: bold;
+      color: #555;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+    .date-input-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .day-display {
+      font-weight: bold;
+      color: #555;
+      min-width: 40px;
+    }
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .btn-danger {
+      background-color: var(--error-color);
+    }
+    .btn-danger:hover {
+      background-color: #d32f2f;
+    }
+    .btn-info {
+      background-color: #2196F3;
+    }
+    .btn-info:hover {
+      background-color: #1976D2;
+    }
+    .btn-warning {
+      background-color: #FF9800;
+    }
+    .btn-warning:hover {
+      background-color: #F57C00;
+    }
+    .calendar-wrapper {
+      margin-top: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .message-area {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+    }
+    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: none;
+      color: #555;
+      width: auto;
+      padding: 10px 20px;
+      border-radius: 0;
+      border-bottom: 3px solid transparent;
+      font-size: 16px;
+      flex: 1; /* タブを均等に広げる */
+    }
+    .tab-btn:hover {
+      background-color: #f1f1f1;
+    }
+    .tab-btn.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-bar button {
+      width: 100px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .reservation-card {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .reservation-card-info {
+      flex: 1;
+    }
+    .reservation-card-info strong {
+      display: block;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+    .reservation-card button {
+      width: auto;
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+    
+    /* 問い合わせフォーム用の調整 */
+    .optional-label {
+      font-weight: normal;
+      color: #666;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>研究室予約システム</h1>
+
+    <div class="section">
+      <h2>予約状況の確認</h2>
+      <div class="calendar-wrapper">
+        <iframe src="https://calendar.google.com/calendar/embed?src=seigyo.reserve.system%40gmail.com&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0" style="border: 0" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('new')">新規予約</button>
+      <button class="tab-btn" onclick="switchTab('manage')">変更・キャンセル</button>
+      <button class="tab-btn" onclick="switchTab('inquiry')">お問い合わせ・要望</button>
+    </div>
+
+    <div id="new-section" class="tab-content active section">
+      <form id="reservation-form">
+        <div class="form-group">
+          <label for="userPrefix">メールアドレス</label>
+          <div class="email-input-group">
+            <input type="text" id="userPrefix" required placeholder="yamaguchi.taro">
+            <span class="email-domain">@yamaguchi-u.ac.jp</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="userName">氏名</label>
+          <input type="text" id="userName" required placeholder="山口 太郎">
+        </div>
+        
+        <div class="form-group">
+          <label for="resDate">予約日</label>
+          <div class="date-input-wrapper">
+            <input type="date" id="resDate" required>
+            <span id="resDateDay" class="day-display"></span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>利用時間</label>
+          <div class="time-inputs">
+            <input type="time" id="startTime" required>
+            <span>～</span>
+            <input type="time" id="endTime" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="purpose">利用目的</label>
+          <input type="text" id="purpose" required placeholder="実験、ミーティングなど">
+        </div>
+        
+        <button type="submit" id="submit-btn">予約を申し込む</button>
+      </form>
+      <div id="new-message-area" class="message-area"></div>
+    </div>
+
+    <div id="manage-section" class="tab-content section">
+      <div class="form-group">
+        <label for="searchPrefix">自分の予約を検索</label>
+        <div class="search-bar">
+          <div class="email-input-group" style="flex: 1;">
+            <input type="text" id="searchPrefix" placeholder="yamaguchi.taro">
+            <span class="email-domain">@yamaguchi-u.ac.jp</span>
+          </div>
+          <button type="button" id="search-btn" class="btn-info" onclick="searchUserReservations()">検索</button>
+        </div>
+      </div>
+      
+      <div id="manage-message-area" class="message-area"></div>
+      
+      <div id="user-reservation-list" style="margin-top: 20px;"></div>
+
+      <form id="manage-form" style="display: none;">
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+        
+        <div class="form-group">
+          <label>対象の予約情報</label>
+          <p style="margin:5px 0;">予約者: <span id="m_userName"></span> (<span id="m_userEmail"></span>)</p>
+        </div>
+        
+        <input type="hidden" id="m_resId">
+        <input type="hidden" id="m_originalEmail">
+
+        <div class="form-group">
+          <label for="m_resDate">予約日</label>
+          <div class="date-input-wrapper">
+            <input type="date" id="m_resDate" required>
+            <span id="m_resDateDay" class="day-display"></span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>利用時間</label>
+          <div class="time-inputs">
+            <input type="time" id="m_startTime" required>
+            <span>～</span>
+            <input type="time" id="m_endTime" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="m_purpose">利用目的</label>
+          <input type="text" id="m_purpose" required>
+        </div>
+        
+        <div class="button-group">
+          <button type="submit" id="update-btn">変更を保存</button>
+          <button type="button" id="cancel-btn" class="btn-danger" onclick="cancelReservation()">予約をキャンセル</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="inquiry-section" class="tab-content section">
+      <p style="margin-top: 0; color: #555;">利用できない日時のブロック申請や、システムへの要望・不具合報告はこちらからお送りください。</p>
+      
+      <form id="inquiry-form">
+        <div class="form-group">
+          <label for="inqPrefix">メールアドレス</label>
+          <div class="email-input-group">
+            <input type="text" id="inqPrefix" required placeholder="yamaguchi.taro">
+            <span class="email-domain">@yamaguchi-u.ac.jp</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="inqName">氏名</label>
+          <input type="text" id="inqName" required placeholder="山口 太郎">
+        </div>
+        
+        <div class="form-group">
+          <label for="inqCategory">お問い合わせの種類</label>
+          <select id="inqCategory" required>
+            <option value="" disabled selected>選択してください</option>
+            <option value="利用不可日時の申請">利用不可日時の申請（ゼミや授業など）</option>
+            <option value="システムの不具合報告">システムの不具合報告</option>
+            <option value="その他の要望・問い合わせ">その他の要望・問い合わせ</option>
+          </select>
+        </div>
+        
+        <div id="inqDateGroup" style="display: none; padding: 15px; background: #f0f8ff; border-radius: 4px; margin-bottom: 15px; border: 1px solid #cce5ff;">
+          <div class="form-group">
+            <label for="inqTargetDate">対象の日付 <span class="optional-label">※決まっている場合</span></label>
+            <input type="date" id="inqTargetDate">
+          </div>
+          <div class="form-group">
+            <label for="inqTargetTime">対象の時間帯 <span class="optional-label">※決まっている場合</span></label>
+            <input type="text" id="inqTargetTime" placeholder="例: 13:00〜15:00 または 終日">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="inqMessage">内容</label>
+          <textarea id="inqMessage" required placeholder="詳細をご記入ください。ゼミ等の場合は理由も記載してください。"></textarea>
+        </div>
+        
+        <button type="submit" id="inq-submit-btn" class="btn-warning">管理者に送信する</button>
+      </form>
+      <div id="inq-message-area" class="message-area"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const days = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'];
+    let currentReservations = [];
+    
+    window.onload = function() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+      
+      document.getElementById('resDate').value = todayStr;
+      updateDayDisplay(todayStr, 'resDateDay');
+    };
+
+    // タブ切り替え制御（問い合わせタブを追加）
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      document.getElementById('new-message-area').style.display = 'none';
+      document.getElementById('manage-message-area').style.display = 'none';
+      document.getElementById('inq-message-area').style.display = 'none';
+      
+      if (tabId === 'new') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('new-section').classList.add('active');
+      } else if (tabId === 'manage') {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('manage-section').classList.add('active');
+      } else if (tabId === 'inquiry') {
+        document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+        document.getElementById('inquiry-section').classList.add('active');
+      }
+    }
+    
+    document.getElementById('resDate').addEventListener('change', function() {
+      updateDayDisplay(this.value, 'resDateDay');
+    });
+    
+    document.getElementById('m_resDate').addEventListener('change', function() {
+      updateDayDisplay(this.value, 'm_resDateDay');
+    });
+    
+    function updateDayDisplay(dateString, elementId) {
+      if (!dateString) return;
+      const d = new Date(dateString);
+      if (!isNaN(d)) {
+        document.getElementById(elementId).textContent = days[d.getDay()];
+      }
+    }
+    
+    function showMessage(areaId, text, isSuccess) {
+      const msgArea = document.getElementById(areaId);
+      msgArea.textContent = text;
+      msgArea.className = 'message-area ' + (isSuccess ? 'success' : 'error');
+      msgArea.style.display = 'block';
+    }
+    
+    // メールアドレスから氏名を自動補完 (新規予約用)
+    document.getElementById('userPrefix').addEventListener('blur', function() {
+      const prefix = this.value.trim();
+      if (!prefix) return;
+      const fullEmail = prefix + '@yamaguchi-u.ac.jp';
+      
+      google.script.run
+        .withSuccessHandler(function(name) {
+          if (name) document.getElementById('userName').value = name;
+        })
+        .apiGetUserNameByEmail(fullEmail);
+    });
+
+    // メールアドレスから氏名を自動補完 (問い合わせ用)
+    document.getElementById('inqPrefix').addEventListener('blur', function() {
+      const prefix = this.value.trim();
+      if (!prefix) return;
+      const fullEmail = prefix + '@yamaguchi-u.ac.jp';
+      
+      google.script.run
+        .withSuccessHandler(function(name) {
+          if (name) document.getElementById('inqName').value = name;
+        })
+        .apiGetUserNameByEmail(fullEmail);
+    });
+
+    // お問い合わせカテゴリによる表示切り替え
+    document.getElementById('inqCategory').addEventListener('change', function() {
+      const dateGroup = document.getElementById('inqDateGroup');
+      if (this.value === '利用不可日時の申請') {
+        dateGroup.style.display = 'block';
+      } else {
+        dateGroup.style.display = 'none';
+        document.getElementById('inqTargetDate').value = '';
+        document.getElementById('inqTargetTime').value = '';
+      }
+    });
+
+    // お問い合わせ送信処理
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('inq-submit-btn');
+      const prefix = document.getElementById('inqPrefix').value.trim();
+      if (!prefix) return;
+      
+      const requestData = {
+        userEmail: prefix + '@yamaguchi-u.ac.jp',
+        userName: document.getElementById('inqName').value,
+        category: document.getElementById('inqCategory').value,
+        targetDate: document.getElementById('inqTargetDate').value,
+        targetTime: document.getElementById('inqTargetTime').value,
+        message: document.getElementById('inqMessage').value
+      };
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送信中...';
+      document.getElementById('inq-message-area').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('inq-message-area', result.message, true);
+            document.getElementById('inquiry-form').reset();
+            document.getElementById('inqDateGroup').style.display = 'none';
+          } else {
+            showMessage('inq-message-area', result.message, false);
+          }
+          submitBtn.disabled = false;
+          submitBtn.textContent = '管理者に送信する';
+        })
+        .withFailureHandler(function(error) {
+          showMessage('inq-message-area', '通信エラーが発生しました。', false);
+          submitBtn.disabled = false;
+          submitBtn.textContent = '管理者に送信する';
+        })
+        .apiSendInquiry(requestData);
+    });
+
+    // 新規予約送信処理
+    document.getElementById('reservation-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submit-btn');
+      const prefix = document.getElementById('userPrefix').value.trim();
+      if (!prefix) return;
+      const fullEmail = prefix + '@yamaguchi-u.ac.jp';
+      
+      const requestData = {
+        userEmail: fullEmail,
+        userName: document.getElementById('userName').value,
+        date: document.getElementById('resDate').value,
+        startTime: document.getElementById('startTime').value,
+        endTime: document.getElementById('endTime').value,
+        purpose: document.getElementById('purpose').value
+      };
+      
+      if (requestData.startTime >= requestData.endTime) {
+        showMessage('new-message-area', '終了時間は開始時間より後の時間を指定してください。', false);
+        return;
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = '処理中...';
+      document.getElementById('new-message-area').style.display = 'none';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('new-message-area', result.message, true);
+            const savedPrefix = prefix;
+            const savedName = requestData.userName;
+            document.getElementById('reservation-form').reset();
+            document.getElementById('resDate').value = requestData.date;
+            updateDayDisplay(requestData.date, 'resDateDay');
+            document.getElementById('userPrefix').value = savedPrefix;
+            document.getElementById('userName').value = savedName;
+            
+            setTimeout(() => { document.querySelector('iframe').src = document.querySelector('iframe').src; }, 2000);
+          } else {
+            showMessage('new-message-area', result.message, false);
+          }
+          submitBtn.disabled = false;
+          submitBtn.textContent = '予約を申し込む';
+        })
+        .withFailureHandler(function(error) {
+          showMessage('new-message-area', '通信エラーが発生しました。', false);
+          submitBtn.disabled = false;
+          submitBtn.textContent = '予約を申し込む';
+        })
+        .apiCreateReservation(requestData);
+    });
+
+    function searchUserReservations() {
+      const prefix = document.getElementById('searchPrefix').value.trim();
+      if (!prefix) {
+        showMessage('manage-message-area', 'メールアドレスの@より前を入力してください。', false);
+        return;
+      }
+      const fullEmail = prefix + '@yamaguchi-u.ac.jp';
+      const searchBtn = document.getElementById('search-btn');
+      
+      searchBtn.disabled = true;
+      searchBtn.textContent = '検索中...';
+      document.getElementById('manage-message-area').style.display = 'none';
+      document.getElementById('manage-form').style.display = 'none';
+      document.getElementById('user-reservation-list').innerHTML = '';
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          currentReservations = data;
+          renderReservationList();
+          searchBtn.disabled = false;
+          searchBtn.textContent = '検索';
+        })
+        .withFailureHandler(function(error) {
+          showMessage('manage-message-area', error.message, false);
+          searchBtn.disabled = false;
+          searchBtn.textContent = '検索';
+        })
+        .apiGetReservationsByUser(fullEmail);
+    }
+    
+    function renderReservationList() {
+      const listArea = document.getElementById('user-reservation-list');
+      listArea.innerHTML = '';
+      
+      if (currentReservations.length === 0) {
+        listArea.innerHTML = '<p>現在有効な予約（これからの予定）は見つかりませんでした。</p>';
+        return;
+      }
+      
+      let html = '<p>編集またはキャンセルする予約を選択してください：</p>';
+      for (let i = 0; i < currentReservations.length; i++) {
+        const res = currentReservations[i];
+        const dateObj = new Date(res.date);
+        const dayStr = !isNaN(dateObj) ? days[dateObj.getDay()] : '';
+        html += `
+          <div class="reservation-card">
+            <div class="reservation-card-info">
+              <strong>${res.date} ${dayStr}</strong>
+              <span>${res.startTime} ～ ${res.endTime}</span><br>
+              <span style="color: #666; font-size: 0.9em;">目的: ${res.purpose}</span>
+            </div>
+            <button type="button" class="btn-info" onclick="selectReservationToEdit(${i})">編集</button>
+          </div>
+        `;
+      }
+      listArea.innerHTML = html;
+    }
+    
+    function selectReservationToEdit(index) {
+      const data = currentReservations[index];
+      const prefix = document.getElementById('searchPrefix').value.trim();
+      const fullEmail = prefix + '@yamaguchi-u.ac.jp';
+      
+      document.getElementById('m_resId').value = data.reservationId;
+      document.getElementById('m_originalEmail').value = fullEmail;
+      document.getElementById('m_userName').textContent = data.userName;
+      document.getElementById('m_userEmail').textContent = fullEmail;
+      document.getElementById('m_resDate').value = data.date;
+      updateDayDisplay(data.date, 'm_resDateDay');
+      document.getElementById('m_startTime').value = data.startTime;
+      document.getElementById('m_endTime').value = data.endTime;
+      document.getElementById('m_purpose').value = data.purpose;
+      
+      document.getElementById('manage-form').style.display = 'block';
+      document.getElementById('manage-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('manage-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const updateBtn = document.getElementById('update-btn');
+      
+      const requestData = {
+        reservationId: document.getElementById('m_resId').value,
+        userEmail: document.getElementById('m_originalEmail').value,
+        userName: document.getElementById('m_userName').textContent,
+        date: document.getElementById('m_resDate').value,
+        startTime: document.getElementById('m_startTime').value,
+        endTime: document.getElementById('m_endTime').value,
+        purpose: document.getElementById('m_purpose').value
+      };
+      
+      if (requestData.startTime >= requestData.endTime) {
+        showMessage('manage-message-area', '終了時間は開始時間より後の時間を指定してください。', false);
+        return;
+      }
+      
+      updateBtn.disabled = true;
+      updateBtn.textContent = '処理中...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('manage-message-area', result.message, true);
+            document.getElementById('manage-form').style.display = 'none';
+            searchUserReservations();
+            setTimeout(() => { document.querySelector('iframe').src = document.querySelector('iframe').src; }, 2000);
+          } else {
+            showMessage('manage-message-area', result.message, false);
+          }
+          updateBtn.disabled = false;
+          updateBtn.textContent = '変更を保存';
+        })
+        .withFailureHandler(function(error) {
+          showMessage('manage-message-area', '通信エラーが発生しました。', false);
+          updateBtn.disabled = false;
+          updateBtn.textContent = '変更を保存';
+        })
+        .apiUpdateReservation(requestData);
+    });
+
+    function cancelReservation() {
+      if (!confirm('本当にこの予約をキャンセルしますか？\nこの操作は取り消せません。')) {
+        return;
+      }
+      
+      const cancelBtn = document.getElementById('cancel-btn');
+      const resId = document.getElementById('m_resId').value;
+      const email = document.getElementById('m_originalEmail').value;
+      
+      cancelBtn.disabled = true;
+      cancelBtn.textContent = '処理中...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showMessage('manage-message-area', result.message, true);
+            document.getElementById('manage-form').style.display = 'none';
+            searchUserReservations();
+            setTimeout(() => { document.querySelector('iframe').src = document.querySelector('iframe').src; }, 2000);
+          } else {
+            showMessage('manage-message-area', result.message, false);
+          }
+          cancelBtn.disabled = false;
+          cancelBtn.textContent = '予約をキャンセル';
+        })
+        .withFailureHandler(function(error) {
+          showMessage('manage-message-area', '通信エラーが発生しました。', false);
+          cancelBtn.disabled = false;
+          cancelBtn.textContent = '予約をキャンセル';
+        })
+        .apiCancelReservation(resId, email);
+    }
+  </script>
+</body>
+</html>
