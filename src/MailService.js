@@ -69,7 +69,7 @@ function processMailQueue() {
     
     try {
       // 実際のメール送信処理
-      GmailApp.sendEmail(recipient, subject, body, { name: "制御研 ８階小部屋予約システム" });
+      GmailApp.sendEmail(recipient, subject, body, { name: "制御研 8階小部屋予約システム" });
       
       // 送信成功時の更新
       sheet.getRange(targetRowIndex, 8).setValue("SENT");
